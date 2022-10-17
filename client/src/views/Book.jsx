@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
-import { useQuery, gql } from '@apollo/client'
+import React, { useState, useEffect } from 'react'
+import { useQuery, useMutation, gql } from '@apollo/client'
 import { Button, Table, message } from 'antd'
 import BookInfoModal from './BookInfoModal'
 import QueryResult from '../components/query-result'
 
-/** BOOKS gql query to retreive all books */
-const BOOKS = gql`
+/** GET_BOOKS gql query to retreive all books */
+const GET_BOOKS = gql`
   query getBooks {
     booksForTable {
       BookID
@@ -17,12 +17,35 @@ const BOOKS = gql`
   }
 `
 
+/**
+ * Mutation to modify book's info.
+ */
+const MODIFY_BOOK_INFO = gql`
+  mutation ModifyBookInfo($bookInfo: BookArgs!) {
+    modifyBookInfo(bookInfo: $bookInfo) {
+      code
+      success
+      message
+      bookInfo {
+        BookID
+      }
+    }
+  }
+`
+
 export default function Book() {
-  const { loading, error, data } = useQuery(BOOKS)
-  const [books, setBooks] = useState()
+  const { loading, error, data } = useQuery(GET_BOOKS)
+  const [books, setBooks] = useState(data?.booksForTable)
   const [visible, setVisible] = useState(false)
   const [model, setModel] = useState('')
   const [record, setRecord] = useState({})
+  const [modifyBookInfo] = useMutation(MODIFY_BOOK_INFO, {
+    refetchQueries: [{ query: GET_BOOKS }],
+  })
+
+  useEffect(() => {
+    setBooks(data?.booksForTable)
+  }, [data])
 
   const columns = [
     {
@@ -96,32 +119,12 @@ export default function Book() {
     },
   ]
   const handleSubmit = (values) => {
-    console.log('------model', model)
-    switch (model) {
-      case 'PUT':
-        fetchFuc('http://localhost:3000/api/modifyBookInfo', model, {
-          bookID: record.bookID,
-          ...values,
-        })
-        break
-      case 'PATCH':
-        fetchFuc('http://localhost:3000/api/modifyPartialBookInfo', model, {
-          bookID: record.bookID,
-          ...values,
-        })
-        break
-      case 'DELETE':
-        console.log('------delete bookID', record.bookID)
-        fetchFuc('http://localhost:3000/api/deleteBookByID', model, {
-          bookID: record.bookID,
-        })
-        break
-      case 'POST':
-        fetchFuc('http://localhost:3000/api/addBook', model, values)
-        break
-      default:
-        break
-    }
+    modifyBookInfo({
+      variables: {
+        bookInfo: { BookID: record.BookID, ...values },
+      },
+    })
+    setVisible(false)
   }
 
   const fetchFuc = (url, method, data) => {
@@ -221,7 +224,7 @@ export default function Book() {
         <QueryResult error={error} loading={loading} data={data}>
           <Table
             columns={columns}
-            dataSource={data?.booksForTable.map((e) => ({
+            dataSource={books?.map((e) => ({
               key: e.BookID,
               ...e,
             }))}

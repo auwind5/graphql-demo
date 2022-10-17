@@ -6,20 +6,24 @@ const resolvers = {
   },
   Mutation: {
     // increments a track's numberOfViews property
-    incrementTrackViews: async (_, { id }, { dataSources }) => {
+    modifyBookInfo: async (_, { bookInfo }, { dataSources }) => {
       try {
-        const track = await dataSources.trackAPI.incrementTrackViews(id)
+        const modifiedBookInfo = await dataSources.db.modifyBookInfo(bookInfo)
+        console.log('success++++++++++++')
         return {
           code: 200,
           success: true,
-          message: `Successfully incremented number of views for track ${id}`,
+          message: `Successfully updated book information!`,
+          bookInfo: modifiedBookInfo,
         }
       } catch (err) {
+        console.log('error++++++++++++', err)
+        console.log('bookInfo++++++++++++', bookInfo)
         return {
           code: err.extensions.response.status,
           success: false,
           message: err.extensions.response.body,
-          track: null,
+          bookInfo: null,
         }
       }
     },

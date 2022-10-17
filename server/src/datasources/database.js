@@ -1,10 +1,17 @@
 const { SQLDataSource } = require('datasource-sql')
 
-const MINUTE = 60
-
 class Database extends SQLDataSource {
   getBooks() {
-    return this.knex.select('*').from('Book').cache(MINUTE)
+    return this.knex.select('*').from('Book')
+  }
+  modifyBookInfo(bookInfo) {
+    return this.knex('Book').where('BookID', '=', bookInfo.BookID).update({
+      BookID: bookInfo.BookID,
+      Author: bookInfo.Author,
+      BookName: bookInfo.BookName,
+      City: bookInfo.City,
+      ShelfID: bookInfo.ShelfID,
+    })
   }
 }
 

@@ -5,9 +5,21 @@ import App from './App'
 import reportWebVitals from './reportWebVitals'
 import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client'
 
+const defaultOptions = {
+  watchQuery: {
+    fetchPolicy: 'no-cache',
+    errorPolicy: 'ignore',
+  },
+  query: {
+    fetchPolicy: 'no-cache',
+    errorPolicy: 'all',
+  },
+}
+
 const client = new ApolloClient({
   uri: 'http://localhost:4000',
   cache: new InMemoryCache(),
+  // defaultOptions: defaultOptions,
 })
 
 const root = ReactDOM.createRoot(document.getElementById('root'))

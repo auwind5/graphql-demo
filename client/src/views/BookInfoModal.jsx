@@ -4,7 +4,7 @@ import { useForm } from 'antd/lib/form/Form'
 
 export default function BookInfoModal(props) {
   const { isModalVisible, model, handleSubmit, handleCancel, rowData } = props
-  const [ form ] = useForm()
+  const [form] = useForm()
 
   useEffect(() => {
     if (model !== 'POST') {
@@ -30,34 +30,22 @@ export default function BookInfoModal(props) {
         form={form}
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 16 }}
-        initialValues={{ }}
+        initialValues={{}}
         onFinish={handleSubmit}
         onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
-        <Form.Item
-          label="Book Name"
-          name="bookName"
-        >
-          <Input name="bookName" />
+        <Form.Item label="Book Name" name="BookName">
+          <Input name="BookName" />
         </Form.Item>
-        <Form.Item
-          label="Author"
-          name="author"
-        >
-          <Input name="author" />
+        <Form.Item label="Author" name="Author">
+          <Input name="Author" />
         </Form.Item>
-        <Form.Item
-          label="Shelf ID"
-          name="shelfID"
-        >
-          <Input name="shelfID" />
+        <Form.Item label="Shelf ID" name="ShelfID">
+          <Input name="ShelfID" />
         </Form.Item>
-        <Form.Item
-          label="City"
-          name="city"
-        >
-          <Input name="city" />
+        <Form.Item label="City" name="City">
+          <Input name="City" />
         </Form.Item>
 
         <Form.Item wrapperCol={{ offset: 18, span: 16 }}>
