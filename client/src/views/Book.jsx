@@ -131,7 +131,9 @@ export default function Book() {
   const headHandler = () => {
     fetch('http://localhost:3000/api/getBookByID', { method: 'HEAD' }).then(
       (res) => {
-        message.info(`name got from response headers: ${res.headers.get('name')}`)
+        message.info(
+          `name got from response headers: ${res.headers.get('name')}`
+        )
       }
     )
   }
