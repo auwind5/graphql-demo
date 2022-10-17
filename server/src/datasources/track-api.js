@@ -1,35 +1,19 @@
-const { RESTDataSource } = require('apollo-datasource-rest');
+const { RESTDataSource } = require('apollo-datasource-rest')
+const { initDBConnection } = require('./database.js')
 
 class TrackAPI extends RESTDataSource {
   constructor() {
-    super();
+    super()
     // the Catstronauts catalog is hosted on this server
-    this.baseURL = 'https://odyssey-lift-off-rest-api.herokuapp.com/';
+    this.baseURL = 'https://odyssey-lift-off-rest-api.herokuapp.com/'
   }
 
-  getTracksForHome() {
-    return this.get('tracks');
-  }
-
-  getAuthor(authorId) {
-    return this.get(`author/${authorId}`);
-  }
-
-  getTrack(trackId) {
-    return this.get(`track/${trackId}`);
-  }
-
-  getTrackModules(trackId) {
-    return this.get(`track/${trackId}/modules`);
-  }
-
-  getModule(moduleId) {
-    return this.get(`module/${moduleId}`);
-  }
-
-  incrementTrackViews(trackId) {
-    return this.patch(`track/${trackId}/numberOfViews`);
+  booksForTable() {
+    connection.query('select * from book', (error, results, fields) => {
+      if (error) throw error
+      return results
+    })
   }
 }
 
-module.exports = TrackAPI;
+module.exports = TrackAPI

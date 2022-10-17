@@ -1,10 +1,25 @@
 import React, { useState } from 'react'
+import { useQuery, gql } from '@apollo/client'
 import { Button, Table, message } from 'antd'
-import { base_url, getBookByID } from '../api/endpoints'
 import BookInfoModal from './BookInfoModal'
+import QueryResult from '../components/query-result'
+
+/** BOOKS gql query to retreive all books */
+const BOOKS = gql`
+  query getBooks {
+    booksForTable {
+      BookID
+      Author
+      BookName
+      City
+      ShelfID
+    }
+  }
+`
 
 export default function Book() {
-  const [data, setData] = useState()
+  const { loading, error, data } = useQuery(BOOKS)
+  const [books, setBooks] = useState()
   const [visible, setVisible] = useState(false)
   const [model, setModel] = useState('')
   const [record, setRecord] = useState({})
@@ -12,28 +27,28 @@ export default function Book() {
   const columns = [
     {
       title: 'Book ID',
-      dataIndex: 'bookID',
-      key: 'bookID',
+      dataIndex: 'BookID',
+      key: 'BookID',
     },
     {
       title: 'Book Name',
-      dataIndex: 'bookName',
-      key: 'bookName',
+      dataIndex: 'BookName',
+      key: 'BookName',
     },
     {
       title: 'Author',
-      dataIndex: 'author',
-      key: 'author',
+      dataIndex: 'Author',
+      key: 'Author',
     },
     {
       title: 'Shelf',
-      dataIndex: 'shelfID',
-      key: 'shelfID',
+      dataIndex: 'ShelfID',
+      key: 'ShelfID',
     },
     {
       title: 'City',
-      dataIndex: 'city',
-      key: 'city',
+      dataIndex: 'City',
+      key: 'City',
     },
     {
       title: 'Operate',
@@ -152,7 +167,7 @@ export default function Book() {
             shelfID: e.ShelfID,
           }
         })
-        setData(result)
+        setBooks(result)
       })
   }
 
@@ -203,7 +218,15 @@ export default function Book() {
             POST
           </Button>
         </div>
-        <Table columns={columns} dataSource={data}></Table>
+        <QueryResult error={error} loading={loading} data={data}>
+          <Table
+            columns={columns}
+            dataSource={data?.booksForTable.map((e) => ({
+              key: e.BookID,
+              ...e,
+            }))}
+          ></Table>
+        </QueryResult>
       </div>
       <BookInfoModal
         model={model}
