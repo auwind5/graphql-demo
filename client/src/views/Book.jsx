@@ -4,7 +4,7 @@ import { Button, Table, message } from 'antd'
 import BookInfoModal from './BookInfoModal'
 import QueryResult from '../components/query-result'
 
-/** GET_BOOKS gql query to retreive all books */
+/** GET_BOOKS gql query to retrieve all books */
 const GET_BOOKS = gql`
   query getBooks {
     booksForTable {
@@ -34,7 +34,7 @@ const MODIFY_BOOK_INFO = gql`
 `
 
 export default function Book() {
-  const { loading, error, data } = useQuery(GET_BOOKS)
+  const { loading, error, data, refetch } = useQuery(GET_BOOKS)
   const [books, setBooks] = useState(data?.booksForTable)
   const [visible, setVisible] = useState(false)
   const [model, setModel] = useState('')
@@ -81,38 +81,14 @@ export default function Book() {
           <Button
             type="primary"
             size="small"
-            onClick={putHandler(record)}
+            onClick={modifyHandler(record)}
             style={{
               backgroundColor: '#67c23a',
               borderColor: '#67c23a',
               marginRight: '5px',
             }}
           >
-            PUT
-          </Button>
-          <Button
-            type="primary"
-            size="small"
-            onClick={patchHandler(record)}
-            style={{
-              backgroundColor: '#67c23a',
-              borderColor: '#67c23a',
-              marginRight: '5px',
-            }}
-          >
-            PATCH
-          </Button>
-          <Button
-            type="primary"
-            size="small"
-            onClick={deleteHandler(record)}
-            style={{
-              backgroundColor: '#f56c6c',
-              borderColor: '#f56c6c',
-              marginRight: '5px',
-            }}
-          >
-            DELETE
+            Modify
           </Button>
         </>
       ),
@@ -127,98 +103,26 @@ export default function Book() {
     setVisible(false)
   }
 
-  const fetchFuc = (url, method, data) => {
-    fetch(url, {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        setVisible(false)
-        getData()
-      })
-  }
-
   const handleCancel = () => {
     setVisible((prev) => !prev)
   }
 
-  const headHandler = () => {
-    fetch('http://localhost:3000/api/getBookByID', { method: 'HEAD' }).then(
-      (res) => {
-        message.info(
-          `name got from response headers: ${res.headers.get('name')}`
-        )
-      }
-    )
-  }
-
   const getData = () => {
-    fetch('http://localhost:3000/api/getBookByID', { method: 'GET' })
-      .then((res) => res.json())
-      .then((res) => {
-        const result = res.map((e) => {
-          return {
-            key: e.BookID,
-            bookID: e.BookID,
-            author: e.Author,
-            bookName: e.BookName,
-            city: e.City,
-            shelfID: e.ShelfID,
-          }
-        })
-        setBooks(result)
-      })
+    refetch()
   }
 
-  const putHandler = (record) => () => {
+  const modifyHandler = (record) => () => {
     setModel('PUT')
     setRecord(record)
     setVisible(true)
-  }
-
-  const patchHandler = (record) => () => {
-    setModel('PATCH')
-    setRecord(record)
-    setVisible(true)
-  }
-
-  const postHandler = () => {
-    setModel('POST')
-    setVisible(true)
-  }
-
-  const deleteHandler = (record) => () => {
-    setModel('DELETE')
-    setRecord(record)
-    fetchFuc('http://localhost:3000/api/deleteBookByID', 'DELETE', {
-      bookID: record.bookID,
-    })
   }
 
   return (
     <>
       <div className="book-table">
         <div className="button-container">
-          <Button
-            type="primary"
-            style={{ backgroundColor: '#dcdfe6', borderColor: '#dcdfe6' }}
-            onClick={headHandler}
-          >
-            HEAD
-          </Button>
           <Button type="primary" onClick={getData}>
             GET
-          </Button>
-          <Button
-            type="primary"
-            style={{ backgroundColor: '#e6a23c', borderColor: '#e6a23c' }}
-            onClick={postHandler}
-          >
-            POST
           </Button>
         </div>
         <QueryResult error={error} loading={loading} data={data}>
