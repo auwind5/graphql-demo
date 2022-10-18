@@ -12,7 +12,7 @@ const resolvers = {
           code: 200,
           success: true,
           message: `Successfully updated book information!`,
-          bookInfo: modifiedBookInfo,
+          bookInfo: bookInfo,
         }
       } catch (err) {
         return {

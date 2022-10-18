@@ -5,13 +5,15 @@ class Database extends SQLDataSource {
     return this.knex.select('*').from('Book')
   }
   modifyBookInfo(bookInfo) {
-    return this.knex('Book').where('BookID', '=', bookInfo.BookID).update({
-      BookID: bookInfo.BookID,
-      Author: bookInfo.Author,
-      BookName: bookInfo.BookName,
-      City: bookInfo.City,
-      ShelfID: bookInfo.ShelfID,
-    })
+    return this.knex('Book')
+      .where('BookID', '=', bookInfo.BookID)
+      .update({ ...bookInfo }, [
+        'BookID',
+        'Author',
+        'BookName',
+        'City',
+        'ShelfID',
+      ])
   }
 }
 
