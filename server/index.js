@@ -1,3 +1,4 @@
+require('dotenv').config()
 const { ApolloServer } = require('apollo-server')
 const typeDefs = require('./src/schema/schema')
 const resolvers = require('./src/resolvers/resolvers')
@@ -6,10 +7,10 @@ const Database = require('./src/datasources/database')
 const knexConfig = {
   client: 'mysql',
   connection: {
-    host: 'localhost',
-    user: 'imart',
-    password: 'imart',
-    database: 'demo',
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
   },
 }
 
