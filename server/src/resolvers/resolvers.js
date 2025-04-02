@@ -5,6 +5,17 @@ const resolvers = {
     },
   },
   Mutation: {
+    addBook: async (_, { bookInfo }, { dataSources }) => {
+      console.log('======bookInfo', bookInfo)
+      const addBookRes = await dataSources.db.addBook(bookInfo)
+      console.log('======addBookRes', addBookRes)
+      return {
+        code: 200,
+        success: true,
+        message: `Successfully added book information!`,
+        bookInfo,
+      }
+    },
     modifyBookInfo: async (_, { bookInfo }, { dataSources }) => {
       try {
         const modifiedBookInfo = await dataSources.db.modifyBookInfo(bookInfo)

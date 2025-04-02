@@ -3,8 +3,8 @@ const mysql = require('mysql')
 export const initDBConnection = () => {
   const connection = mysql.createConnection({
     host: 'localhost',
-    user: 'imart',
-    password: 'imart',
+    user: 'root',
+    password: 'root',
     database: 'demo',
   })
   connection.connect(function (err) {

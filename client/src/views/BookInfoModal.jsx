@@ -7,7 +7,7 @@ export default function BookInfoModal(props) {
   const [form] = useForm()
 
   useEffect(() => {
-    if (model !== 'POST') {
+    if (model !== 'add') {
       form.setFieldsValue(rowData)
     } else {
       form.resetFields()
@@ -24,6 +24,7 @@ export default function BookInfoModal(props) {
       forceRender
       visible={isModalVisible}
       onCancel={handleCancel}
+      destroyOnClose={true}
     >
       <Form
         name="basic"

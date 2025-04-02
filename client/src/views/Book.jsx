@@ -18,6 +18,22 @@ const GET_BOOKS = gql`
 `
 
 /**
+ * Mutation to add book.
+ */
+const ADD_BOOK = gql`
+  mutation AddBook($bookInfo: BookArgs!) {
+    addBook(bookInfo: $bookInfo) {
+      code
+      success
+      message
+      bookInfo {
+        Author
+      }
+    }
+  }
+`
+
+/**
  * Mutation to modify book's info.
  */
 const MODIFY_BOOK_INFO = gql`
@@ -39,8 +55,11 @@ export default function Book() {
   const [visible, setVisible] = useState(false)
   const [model, setModel] = useState('')
   const [record, setRecord] = useState({})
+  const [addBook] = useMutation(ADD_BOOK, {
+    refetchQueries: [{ query: GET_BOOKS }], // Query specified here will be executed after the mutation is completed
+  })
   const [modifyBookInfo] = useMutation(MODIFY_BOOK_INFO, {
-    refetchQueries: [{ query: GET_BOOKS }],
+    refetchQueries: [{ query: GET_BOOKS }], // Query specified here will be executed after the mutation is completed
   })
 
   useEffect(() => {
@@ -95,11 +114,21 @@ export default function Book() {
     },
   ]
   const handleSubmit = (values) => {
-    modifyBookInfo({
-      variables: {
-        bookInfo: { BookID: record.BookID, ...values },
-      },
-    })
+    if (model === 'add') {
+      addBook({
+        variables: {
+          bookInfo: { ...values }
+        }
+      })
+      message.success('Adding succeeded')
+    } else {
+      modifyBookInfo({
+        variables: {
+          bookInfo: { BookID: record.BookID, ...values },
+        },
+      })
+      message.success('Modify succeeded')
+    }
     setVisible(false)
   }
 
@@ -111,8 +140,14 @@ export default function Book() {
     refetch()
   }
 
+  const addData = () => {
+    setModel('add')
+    setVisible(true)
+    setRecord({})
+  }
+
   const modifyHandler = (record) => () => {
-    setModel('PUT')
+    setModel('edit')
     setRecord(record)
     setVisible(true)
   }
@@ -123,6 +158,9 @@ export default function Book() {
         <div className="button-container">
           <Button type="primary" onClick={getData}>
             GET
+          </Button>
+          <Button type="primary" onClick={addData}>
+            ADD
           </Button>
         </div>
         <QueryResult error={error} loading={loading} data={data}>
